@@ -21,11 +21,12 @@ function main() {
     var vertexShaderCode = `
     attribute vec2 aPosition;
     attribute vec3 aColor;
+    uniform float uTheta;
     varying vec3 vColor;
     void main() { 
-      float x = aPosition.x;
-      float y = aPosition.y;
-      gl_PointSize = 10.0;
+      float x = -sin(uTheta)*aPosition.x + cos(uTheta)*aPosition.y;
+      float y = cos(uTheta)*aPosition.x + sin(uTheta)*aPosition.y;
+      //gl_PointSize = 10.0;
       gl_Position = vec4(x, y, 0.0, 1.0);
       vColor = aColor;
     }
@@ -53,8 +54,13 @@ function main() {
     gl.attachShader(shaderProgram, vertexShaderObject);
     gl.attachShader(shaderProgram,fragmentShaderObject);
     gl.linkProgram(shaderProgram);
-
     gl.useProgram(shaderProgram);
+
+    //variabel lokal
+    var theta = 0.0;
+
+    //Variabel pointer ke GLSG
+    var uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
 
     // Mengajari GPU bagaimana caranya mengoleksi nilai posisi dari ARRAY_BUFFER
     // Untuk setiap verteks yang sedang diproses
@@ -67,20 +73,29 @@ function main() {
     gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
     gl.enableVertexAttribArray(aColor);
 
+    function render(){
+    // Set clear color to black, fully opaque
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);  //BLACK
+    //dari kiri ke kanan Red --> Green --> Blue --> Transparansi
+
+    // Clear the color buffer with specified clear color
+      gl.clear(gl.COLOR_BUFFER_BIT);  
+      theta += 0.1;
+      gl.uniform1f(uTheta, theta);
+      // var vektor2D = [x, y];
+      // gl.uniform2f(uTheta, vektor2D[0], vektor2D[1]);
+      // gl.uniform2fv(uTheta, vektor2D);
+      gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+      //render();
+    }
+    setInterval(render, 1000/60);
+
     // Only continue if WebGL is available and working
     if (gl === null) {
       alert("Unable to initialize WebGL. Your browser or machine may not support it.");
       return;
     }
   
-    // Set clear color to black, fully opaque
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);  //BLACK
-    //dari kiri ke kanan Red --> Green --> Blue --> Transparansi
-
-    // Clear the color buffer with specified clear color
-    gl.clear(gl.COLOR_BUFFER_BIT);  
-
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
   }
   
   window.onload = main;
