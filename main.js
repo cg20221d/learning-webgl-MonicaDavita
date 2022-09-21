@@ -74,12 +74,21 @@ function main() {
   gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
   gl.enableVertexAttribArray(aColor);
 
-  //Grafika Interkatif
+  //Grafika Interkatif Mouse
   function onMouseClick(event) {
     freeze = !freeze;
   }
   document.addEventListener("click", onMouseClick);
 
+  //Grafika Iteraktif Keyboard
+  function onKeyDown(event){
+    if (event.keyCode == 32) freeze = !freeze;
+  }
+  function onKeyUp(event){
+    if (event.keyCode == 32) freeze = !freeze;
+  }
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keyup", onKeyUp);
 
   function render() {
     // Set clear color to black, fully opaque
