@@ -23,9 +23,11 @@ function main() {
     attribute vec3 aColor;
     uniform float uTheta;
     varying vec3 vColor;
+    uniform float dx;
+    uniform float dy;
     void main() { 
-      float x = -sin(uTheta)*aPosition.x + cos(uTheta)*aPosition.y;
-      float y = cos(uTheta)*aPosition.x + sin(uTheta)*aPosition.y;
+      float x = -sin(uTheta)*aPosition.x + cos(uTheta)*aPosition.y + dx;
+      float y = cos(uTheta)*aPosition.x + sin(uTheta)*aPosition.y + dy;
       //gl_PointSize = 10.0;
       gl_Position = vec4(x, y, 0.0, 1.0);
       vColor = aColor;
@@ -59,10 +61,14 @@ function main() {
   //variabel lokal
   var theta = 0.0;
   var freeze = false;
+  var deltaX = 0.0;
+  var deltaY = 0.0;
 
   //Variabel pointer ke GLSG
   var uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
-
+  var dx = gl.getUniformLocation(shaderProgram, "dx");
+  var dy = gl.getUniformLocation(shaderProgram, "dy");
+ 
   // Mengajari GPU bagaimana caranya mengoleksi nilai posisi dari ARRAY_BUFFER
   // Untuk setiap verteks yang sedang diproses
 
@@ -82,10 +88,14 @@ function main() {
 
   //Grafika Iteraktif Keyboard
   function onKeyDown(event){
-    if (event.keyCode == 32) freeze = !freeze;
+    if (event.keyCode == 32) freeze = true;
+    if (event.keyCode == 65) deltaX -= 0.2;
+    if (event.keyCode == 83) deltaY -= 0.2;
+    if (event.keyCode == 68) deltaX += 0.2;
+    if (event.keyCode == 87) deltaY += 0.2;
   }
   function onKeyUp(event){
-    if (event.keyCode == 32) freeze = !freeze;
+    if (event.keyCode == 32) freeze = false;
   }
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keyup", onKeyUp);
@@ -101,6 +111,8 @@ function main() {
       theta += 0.1;
       gl.uniform1f(uTheta, theta);
     }
+    gl.uniform1f(dx, deltaX);
+    gl.uniform1f(dy, deltaY);
     // var vektor2D = [x, y];
     // gl.uniform2f(uTheta, vektor2D[0], vektor2D[1]);
     // gl.uniform2fv(uTheta, vektor2D);
