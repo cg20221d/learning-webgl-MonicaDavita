@@ -74,21 +74,22 @@ function main() {
     gl.enableVertexAttribArray(aColor);
 
     function render(){
-    // Set clear color to black, fully opaque
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);  //BLACK
-    //dari kiri ke kanan Red --> Green --> Blue --> Transparansi
-
-    // Clear the color buffer with specified clear color
-      gl.clear(gl.COLOR_BUFFER_BIT);  
-      theta += 0.1;
-      gl.uniform1f(uTheta, theta);
-      // var vektor2D = [x, y];
-      // gl.uniform2f(uTheta, vektor2D[0], vektor2D[1]);
-      // gl.uniform2fv(uTheta, vektor2D);
-      gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+      // Set clear color to black, fully opaque
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);  //BLACK
+      //dari kiri ke kanan Red --> Green --> Blue --> Transparansi
+  
+      // Clear the color buffer with specified clear color
+        gl.clear(gl.COLOR_BUFFER_BIT);  
+        theta += 0.1;
+        gl.uniform1f(uTheta, theta);
+        // var vektor2D = [x, y];
+        // gl.uniform2f(uTheta, vektor2D[0], vektor2D[1]);
+        // gl.uniform2fv(uTheta, vektor2D);
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+      requestAnimationFrame(render);
       //render();
     }
-    setInterval(render, 1000/60);
+    requestAnimationFrame(render);
 
     // Only continue if WebGL is available and working
     if (gl === null) {
