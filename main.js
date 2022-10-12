@@ -7,11 +7,13 @@ function main() {
   const gl = kanvas.getContext("webgl");
 
   var vertices = [
-    0.5, 0.5, 0.996, 0.578, 0.578, //A: kanan atas (FF9494 --> 0.996, 0.578, 0.578)
-    0.0, 0.0, 0.996, 0.816, 0.816, //B: bawah tengah (FFD1D1 --> 0.996, 0.816, 0.816)
-    -0.5, 0.5, 0.996, 0.887, 0.879, // C: kiri atas (FFE3E1 --> 0.996, 0.887, 0.879)
-    0.0, 1.0, 0.998, 0.957, 0.891, //D: atas tengah (FFF5E4 --> 0.998, 0.957, 0.891)
-  ]; // x1, y1, x2, y2, x3, y3
+    0.5, 0.0, 0.0, 1.0, 1.0,   
+    0.0, -0.5, 1.0, 0.0, 1.0, 
+    -0.5, 0.0, 1.0, 1.0, 0.0,  
+    0.0, 0.5, 1.0, 1.0, 1.0 
+  ]; // x1, y1, r1, g1, b1,
+    // x2, y2, r2, g2, b2,
+    // x3, y3, r3, g3, b3
 
   var buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -25,11 +27,22 @@ function main() {
     varying vec3 vColor;
     uniform float dx;
     uniform float dy;
+    uniform vec2 uDelta;
     void main() { 
-      float x = -sin(uTheta)*aPosition.x + cos(uTheta)*aPosition.y + dx;
-      float y = cos(uTheta)*aPosition.x + sin(uTheta)*aPosition.y + dy;
+      // float x = -sin(uTheta)*aPosition.x + cos(uTheta)*aPosition.y + dx;
+      // float y = cos(uTheta)*aPosition.x + sin(uTheta)*aPosition.y + dy;
       //gl_PointSize = 10.0;
-      gl_Position = vec4(x, y, 0.0, 1.0);
+      vec2 position = aPosition;
+      vec3 d = vec3(0.5, -0.5, 0.0);
+      mat4 rotation = mat4(cos(uTheta), sin(uTheta), 0.0, 0.0,
+                          -sin(uTheta), cos(uTheta), 0.0, 0.0,
+                          0.0, 0.0, 1.0, 0.0,
+                          0.0, 0.0, 0.0, 1.0);
+      mat4 translation = mat4(1.0, 0.0, 0.0, 0.0,
+                              0.0, 1.0, 0.0, 0.0,
+                              0.0, 0.0, 1.0, 0.0,
+                              uDelta.x, uDelta.y, 0.0, 1.0);
+      gl_Position = translation * rotation * vec4(position, 0.0, 1.0);
       vColor = aColor;
     }
     `;
@@ -63,9 +76,14 @@ function main() {
   var freeze = false;
   var deltaX = 0.0;
   var deltaY = 0.0;
+  var horizontalDelta = 0.0;
+  var horizontalSpeed = 0.0;
+  var verticalDelta = 0.0;
+  var verticalSpeed = 0.0;
 
   //Variabel pointer ke GLSG
   var uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
+  var uDelta = gl.getUniformLocation(shaderProgram, "uDelta");
   var dx = gl.getUniformLocation(shaderProgram, "dx");
   var dy = gl.getUniformLocation(shaderProgram, "dy");
  
@@ -109,17 +127,14 @@ function main() {
     gl.clear(gl.COLOR_BUFFER_BIT);
     if (!freeze) {
       theta += 0.1;
-      gl.uniform1f(uTheta, theta);
     }
-    gl.uniform1f(dx, deltaX);
-    gl.uniform1f(dy, deltaY);
-    // var vektor2D = [x, y];
-    // gl.uniform2f(uTheta, vektor2D[0], vektor2D[1]);
-    // gl.uniform2fv(uTheta, vektor2D);
+    horizontalDelta += horizontalSpeed;
+    verticalDelta -= verticalSpeed;
+    gl.uniform2f(uDelta, horizontalDelta, verticalDelta);
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     requestAnimationFrame(render);
-    //render();
-  }
+    render();
+   }
   requestAnimationFrame(render);
 
   // Only continue if WebGL is available and working
