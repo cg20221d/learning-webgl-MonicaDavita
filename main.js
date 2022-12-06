@@ -17,11 +17,17 @@ function main() {
   var vertexShaderCode =  `
   attribute vec2 aPosition;
   attribute vec3 aColor;
-  uniform mat4 uModel;
+  uniform float uTheta;
+  uniform vec2 uDelta;
   varying vec3 vColor;
   void main() {
       vec2 position = aPosition;
-      gl_Position = uModel * vec4(position, 0.0, 1.0);
+      vec3 d = vec3(0.5, -0.5, 0.0);
+      mat4 translation = mat4(1.0, 0.0, 0.0, 0.0,
+                              0.0, 1.0, 0.0, 0.0,
+                              0.0, 0.0, 1.0, 0.0,
+                              0.0, 0.0, 0.0, 1.0);
+      gl_Position = translation* vec4(position, 0.0, 1.0);
       vColor = aColor;
   }
   `;
@@ -56,7 +62,8 @@ function main() {
   var verticalDelta = 0.0;
 
   // Variabel pointer ke GLSL
-  var uModel = gl.getUniformLocation(shaderProgram, "uModel");
+  var uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
+  var uDelta = gl.getUniformLocation(shaderProgram, "uDelta");
 
   // Kita mengajari GPU bagaimana caranya mengoleksi
   //  nilai posisi dari ARRAY_BUFFER
@@ -106,18 +113,18 @@ function main() {
       gl.clearColor(1.0,      0.65,    0.0,    1.0);  // Oranye
       //            Merah     Hijau   Biru    Transparansi
       gl.clear(gl.COLOR_BUFFER_BIT);
-      if (!freeze) {
-          theta += 0.1;
-          // gl.uniform1f(uTheta, theta);
-      }
-      horizontalDelta += horizontalSpeed;
-      verticalDelta -= verticalSpeed;
-      var model = glMatrix.mat4.create();
-      glMatrix.mat4.translate(model,  model, [horizontalDelta, verticalDelta, 0.0]);
-      glMatrix.mat4.rotateZ(model, model, theta)
-      gl.uniformMatrix4fv(uModel, false, model);
+    //   if (!freeze) {
+    //       theta += 0.1;
+    //       // gl.uniform1f(uTheta, theta);
+    //   }
+    //   horizontalDelta += horizontalSpeed;
+    //   verticalDelta -= verticalSpeed;
+    //   var model = glMatrix.mat4.create();
+    //   glMatrix.mat4.translate(model,  model, [horizontalDelta, verticalDelta, 0.0]);
+    //   glMatrix.mat4.rotateZ(model, model, theta)
+    //   gl.uniformMatrix4fv(uModel, false, model);
       gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-      requestAnimationFrame(render);
+    requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
 }
