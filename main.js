@@ -22,11 +22,10 @@ function main() {
   varying vec3 vColor;
   void main() {
       vec2 position = aPosition;
-      vec3 d = vec3(0.5, -0.5, 0.0);
       mat4 translation = mat4(1.0, 0.0, 0.0, 0.0,
                               0.0, 1.0, 0.0, 0.0,
                               0.0, 0.0, 1.0, 0.0,
-                              0.0, 0.0, 0.0, 1.0);
+                              uDelta.x, uDelta.y, 0.0, 1.0);
       gl_Position = translation* vec4(position, 0.0, 1.0);
       vColor = aColor;
   }
@@ -117,13 +116,14 @@ function main() {
     //       theta += 0.1;
     //       // gl.uniform1f(uTheta, theta);
     //   }
-    //   horizontalDelta += horizontalSpeed;
-    //   verticalDelta -= verticalSpeed;
+      horizontalDelta += horizontalSpeed;
+      verticalDelta -= verticalSpeed;
     //   var model = glMatrix.mat4.create();
     //   glMatrix.mat4.translate(model,  model, [horizontalDelta, verticalDelta, 0.0]);
     //   glMatrix.mat4.rotateZ(model, model, theta)
     //   gl.uniformMatrix4fv(uModel, false, model);
-      gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+    gl.uniform2f(uDelta, horizontalDelta, verticalDelta);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
